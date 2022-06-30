@@ -2,9 +2,10 @@ package de.oppermann.bastian.safetrade.listener;
 
 import de.oppermann.bastian.safetrade.Main;
 import de.oppermann.bastian.safetrade.util.Trade;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.metadata.MetadataValue;
 
 /**
@@ -18,8 +19,10 @@ public class PlayerPickupItemListener implements Listener {
      * @param event The event.
      */
     @EventHandler
-    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (Trade.getTradeOf(event.getPlayer()) != null) {
+    public void onPlayerPickupItem(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        Player player = (Player) event.getEntity();
+        if (Trade.getTradeOf(player) != null) {
             // players are not allowed to pick up items while trading
             event.setCancelled(true);
         }
@@ -42,7 +45,7 @@ public class PlayerPickupItemListener implements Listener {
                 }
             }
             // If the item belongs to a player he has 30 seconds to pick it up before anyone else is allowed
-            if (System.currentTimeMillis() - 1000 * 30 < dropTimestamp && !event.getPlayer().getName().equals(owner)) {
+            if (System.currentTimeMillis() - 1000 * 30 < dropTimestamp && !player.getName().equals(owner)) {
                 event.setCancelled(true);
             }
         }
